@@ -1,0 +1,269 @@
+
+
+# PythonSeniorCode
+
+## 一、Python的现状和未来
+
+- python3的发布日期2008.12.03
+- [python官方文档](https://www.python.org/dev/peps/pep-0001/)
+- 延迟加载模块：延迟加载模块是指在全局导入时并不加载的模块。在Python中，import语句可以包含在函数内部，这入是在函数调用时才会发生，而不是在全局导入时发样导生。在某些情况下,模块的这种加载方式可能比较合理，但大多数情况下,这只是对设计不佳的模块结构的变通方法(例如避免循环导入)，通常应避免这种加载方式。当然，对于标准库模块来说，没有理由使用延迟加载。
+
+## 二、python2.x和python3.x的差异
+
+python2.x 
+
+1. Unicode 需要有`u`前缀（例如u'some string') 
+2. str 为字节字符串与python3.x的bytes大部分相同
+
+python3.x 
+
+1. 所有没有前缀的字符串都是Unicode 为保证向后兼容可以使用前缀但无任何语法意义
+2. str 不可变序列 保存的是码位 Unicode
+
+>Python字符串是不可变的。字节序列也是如此。这-事实很重要，因为它既有优点又有缺点。它还会影响Python高效处理字符串的方式。由于不变性，字符串可以作为字典的键或set的元素，因为一-. 旦初始化之后字符串的值就不会改变。另-方面，每当需要修改过的字符串时(即使只是微小的修改)，都需要创建一一个 全新的字符串实例。幸运的是，bytearray是bytes的可变版本，不存在这样的问题。字节数组可以通过元素赋值来进行原处修改(无需创建新对象),其大小也可以像列表一样动态地变化(利用append、pop、inseer等方法)。
+
+## 三、类级以下
+
+### 3.1列表推导
+
+常用的for循环生成列表可能适用于C语言，但在Python中的实际运行速度很慢，原因如下。
+
+- 解释器在每次循环中都需要判断序列中的哪一部分需要修改。
+- 需要用-一个计数器来跟踪需要处理的元素。
+- 由于append()是-一个列表方法，所以每次遍历时还需要额外执行一 一个查询函数。
+
+> 列表推导和内部数组调整大小有些Python程序员中会谣传这样的说法:每添加几个元素之后都要对表示列表对象的内部数组大小进行调整，这个问题可以用列表推导来解决。还有人说一次分配就可以将数组大小调整到刚刚好。不幸的是，这些说法都是不正确的。解释器在对列表推导进行求值的过程中并小。因此，内部数组的重新分配方式与for循环中完不知道最终结果容器的大小，也就无法为它预先分配数组的最终大全相同。但在许多情况下，与普通循环相比，使用列表推导创建列表要更加整洁、更加快速。
+
+### 3.2常用高级函数
+
+- enumerate
+
+```python
+list1 = [1,2,3,4]
+for i,element in enumerate(list1):
+    print(i,element)
+```
+
+```sh
+0 1
+1 2
+2 3
+3 4
+```
+
+- zip
+
+```python
+list1 = [1,2,3,4]
+list2 = [5,6,7,8]
+
+for i,j in zip(list1,list2):
+    print(i,j)
+```
+
+```sh
+1 5
+2 6
+3 7
+4 8
+```
+
+- 序列解包
+
+```python
+a,b,c = 1,'2',[3,4]
+print(a,b,c)
+```
+
+```sh
+1 2 [3, 4]
+```
+
+带星号的表达式可以获取序列的剩余部分
+
+```python
+a,*b,c = 1,2,3,4,5
+print(a)
+print(b)
+print(c)
+```
+
+```shell
+1
+[2, 3, 4]
+5
+```
+
+嵌套解包
+
+```python
+(a,b),(c,d) = (1,[2,3]),(4,5)
+print(a)
+print(b)
+print(c)
+print(d)
+```
+
+```sh
+1
+[2, 3]
+4
+5
+```
+
+### 3.3字典
+
+字典的keys()、values ()和items ()3个方法的返回值类型不再是列表。此外，与之对应的iterkeys()、itervalues ()和iteritems ()本来返回的是迭代器，而Python 3中并没有这3个方法。现在keys ()、values ()和items ()返回的是**视图对象(view objects)**。
+
+- keys(): 返回dict_ keys对象，可以查看字典的所有键。
+- values():返回dict_ values对象，可以查看字典的所有值。
+- items(): 返回dict_ items对象，可以查看字典所有的(key, value)二元元组。
+
+视图对象可以动态查看字典的内容，因此每次字典发生变化时，视图都会相应改变，见下面这个例子:
+
+```python 
+a = {
+    'a':[1,2,3],
+    'b':'4',
+}
+work = a.items()
+key = a.keys()
+print(work,key)
+a['c']='5'
+print(work,key)
+```
+
+```sh
+dict_items([('a', [1, 2, 3]), ('b', '4')]) dict_keys(['a', 'b'])
+dict_items([('a', [1, 2, 3]), ('b', '4'), ('c', '5')]) dict_keys(['a', 'b', 'c'])
+```
+
+> 最后一件重要的事情是，在keys ()和values ()方法返回的视图中，键和值的顺序是完全对应的。在Python 2中，如果你想保证获取的键和值顺序一致， 那么在两次函数用之间不能修改字典的内容。现在dict_ keys和dict_ _values是动态的，所以即使在调用keys()和values()之间字典内容发生了变化，那么这两个视图的元素遍历顺序也是完全一致的。
+
+#### 3.3.1 为解决按顺序存储字典
+
+```python
+from collections import OrderedDict
+
+o = OrderedDict((number,None) for number in range(5))
+print(o.keys())
+```
+
+```sh
+odict_keys([0, 1, 2, 3, 4])
+```
+
+### 3.4集合
+
+集合是一种鲁棒性很好的数据结构，当元素顺序的重要性不如元素的唯--性和测试元素是否包含在集合中的效率时，大部分情况下这种数据结构是很有用的。它与数学上的集合概念非常类似。Python的内置集合类型有两种。
+
+- set(): - -种可变的、无序的、有限的集合，其元素是唯一-的、不可变的(可哈希
+- frozenset(): 一种不可变的、可哈希的、无序的集合，其元素是唯- -的、不可变的(可哈希的)对象。
+
+由于frozenset ()具有不变性，它可以用作字典的键，也可以作为其他set()和frozenset()的元素。在一个set() 或frozenset ()中不能包含另一个普通的可变set()，因为这会引发TypeError:
+
+### 3.5超越基础集合类型一 collections模块
+
+- namedtuple(): 用于创建元组子类的工厂 函数(factory function)， 可以通过属性名来访问它的元索引。
+- deque: 双端队列，类似列表，是栈和队列的一-般化，可以在两端快速添加或取出元素。
+- ChainMap: 类似字典的类，用于创建多个映射的单一 视图。
+- Counter:字典子类，由于对可哈希对象进行计数。
+- OrderedDict: 字典子类，可以保存元素的添加顺序。
+- defaultdict: 字典子类，可以通过调用用户自定义的工厂函数来设置缺失值。
+
+## 四、高级语法
+
+### 4.1迭代器（iterator）
+
+迭代器只不过是-一个实现了迭代器协议的容器对象。它基于以下两个方法。
+
+- \_\_next__ :返回容器的下一个元素。
+- \__iter__:返回迭代器本身
+
+```python
+class Countdown():
+    def __init__(self,step):
+        self.step = step
+
+    def __next__(self):
+        if self.step<0:
+            raise StopIteration
+        else:
+            self.step-=1
+            return self.step
+    def __iter__(self):
+        return self
+
+c = Countdown(3)
+print(c.__iter__())
+print(c.__next__())
+print(c.__next__())
+print(c.__next__())
+```
+
+```sh
+<__main__.Countdown object at 0x00000000020FC4A8>
+2
+1
+0
+```
+
+> for 循环首先找\_\_iter\_\_方法确定是可迭代对象，然后去调用\_\_next__方法
+
+### 4.2yield语法
+
+生成器提供了一种优雅的方法， 可以让编写返回元素序列的函数所需的代码变得简单、高效。基于yield语句，生成器可以暂停函数并返回一个中间结果。该函数会保存执行上下文，稍后在必要时可以恢复。
+
+```python
+def fibonacci():
+    a = 0
+    b = 1
+    while True:
+        yield b
+        a,b = b,a+b
+
+f = fibonacci()
+print(f.__next__())
+print(f.__next__())
+print(f.__next__())
+print(f.__next__())
+```
+
+```sh
+1
+1
+2
+3
+```
+
+### 4.3send
+
+```python
+def pylist():
+    print('place tell me your problems?')
+    while True:
+        answer = (yield)
+        if 'bad' in answer:
+            print("Don't so be negative")
+        elif 'good' in answer:
+            print("That good , go on !")
+        elif answer.endswitch('?'):
+            print("Don't ask yourself too much questions")
+
+p = pylist()
+next(p)
+p.send('good')
+```
+
+```sh
+place tell me your problems?
+That good , go on !
+```
+
+send的作用和next类似，但会将函数定义内部传入的值变成yield的返回值。因此，这个函数可以根据客户端代码来改变自身行为。为完成这一-行为， 还添加了另外两个函数:throw和close。它们将向生成器抛出错误。
+
+- throw:允许客户端代码发送要抛出的任何类型的异常。
+- close:作用相同，但会引发特定的异常一-GeneratorExit。 在这种情况下，生成器函数必须再次引发GeneratorExit或StopIteration。
+
+
+
