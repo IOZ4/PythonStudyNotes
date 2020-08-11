@@ -209,6 +209,8 @@ print(c.__next__())
 ```
 
 > for 循环首先找\_\_iter\_\_方法确定是可迭代对象，然后去调用\_\_next__方法
+>
+> 生成器 ：这个函数返回一个generator对象，是特殊的迭代器，它知道如何保存执行上下文。它可以被无限次调用，每次都会生成序列的下一一个元素。这种语法很简洁，算法可无限调用的性质并没有影响代码的可读性。不必提供使函数停止的方法。实际上，它看上去就像用伪代码设计的数列一样。
 
 ### 4.2yield语法
 
@@ -265,5 +267,207 @@ send的作用和next类似，但会将函数定义内部传入的值变成yield�
 - throw:允许客户端代码发送要抛出的任何类型的异常。
 - close:作用相同，但会引发特定的异常一-GeneratorExit。 在这种情况下，生成器函数必须再次引发GeneratorExit或StopIteration。
 
+## 五、装饰器
+
+### 5.1装饰器语法糖和显示的装饰器
+
+```python
+# 装饰器的简单定义
+import time
+
+def timer(function):
+    def wrapped(*args,**kwargs):
+        start_time = time.time()
+        function(*args,**kwargs)
+        end_time = time.time()
+        return end_time-start_time
+    return wrapped
+```
+
+```python
+# 装饰器语法糖
+@timer
+def sayhello():
+    print('我是sayhello函数')
+
+# 调用
+sayhello()
+```
+
+```python
+# 显式的装饰器
+sayhello = timer(sayhello)
+
+# 调用函数
+sayhello()
+```
+
+### 5.2作为一个类
+
+```python
+def sayhello():
+    print('我是sayhello函数')
+
+class SayHello(object):
+    def __init__(self,function):
+        self.function = function
+
+    def __call__(self, *args, **kwargs):
+        # 原始函数调用前做点什么
+        result = self.function(*args, **kwargs)
+        # 原始函数调用后做点什么
+        # 返回结果
+        return result
+s = SayHello(sayhello)
+s()
+```
+
+> \_\_call\_\_方法被定义后，类就可以被定义
+
+### 5.3参数化装饰器
+
+```python
+def cshzsq(number):
+    def cf(function):
+        def wrapped(*args,**kwargs):
+            result = 0
+            for _ in range(number):
+                result += function(*args,**kwargs)
+            return result
+        return wrapped
+    return cf
+
+@cshzsq(3)
+def he(num1,num2):
+    return num2+num1
 
 
+print(he(1,2))
+```
+
+```sh
+9
+```
+
+> wrapped中的(*args,**kwargs)和function的``(*args,**kwargs)`是指向同一个地址的
+
+### 5.4保存内省的装饰器
+
+使用装饰器的常见错误是在使用装饰器时不保存**函数元数据**(主要是文档字符串和原始函数名)。前面所有示例都存在这个问题。装饰器组合创建了一个新函数，并返回-一个新对象，但却完全没有考虑原始函数的标识。这将会使得调试这样装饰过的函数更加困难，也会破坏可能用到的大多数自动生成文档的工具，因为无法访问原始的文档字符串和函数签名。
+
+正常情况下
+
+```python
+def function_with_import_doc(*args,**kwargs):
+    """
+    这是我们需要的文档
+    :param args:
+    :param kwargs:
+    :return:
+    """
+
+print(function_with_import_doc.__name__)
+print(function_with_import_doc.__doc__)
+```
+
+```sh
+function_with_import_doc
+
+    这是我们需要的文档
+    :param args:
+    :param kwargs:
+    :return:
+```
+
+问题
+
+```python
+def dummy_decorator(function):
+    def wrapped(*args,**kwargs):
+        """包装函数的内部文档"""
+        result = function(*args,**kwargs)
+        return result
+    return wrapped
+
+@dummy_decorator
+def function_with_import_doc(*args,**kwargs):
+    """
+    这是我们需要的文档
+    :param args:
+    :param kwargs:
+    :return:
+    """
+
+print(function_with_import_doc.__name__)
+print(function_with_import_doc.__doc__)
+```
+
+```sh
+wrapped
+包装函数的内部文档
+```
+
+解决办法
+
+```python
+from functools import wraps
+
+def dummy_decorator(function):
+    @wraps(function)
+    def wrapped(*args,**kwargs):
+        """包装函数的内部文档"""
+        result = function(*args,**kwargs)
+        return result
+    return wrapped
+
+@dummy_decorator
+def function_with_import_doc(*args,**kwargs):
+    # """这是我们需要的文档"""
+    """
+    这是我们需要的文档
+    :param args:
+    :param kwargs:
+    :return:
+    """
+
+print(function_with_import_doc.__name__)
+print(function_with_import_doc.__doc__)
+
+```
+
+```sh
+function_with_import_doc
+
+    这是我们需要的文档
+    :param args:
+    :param kwargs:
+    :return:
+```
+
+### 5.6for......else语句
+
+### 5.7函数注解
+
+```python
+def annotation(num1:int,dict1:dict,str1='yu')->int:
+    return num1
+
+print(annotation(1,dict1={'s':1}))
+print(annotation.__annotations__)
+```
+
+```sh
+{'num1': <class 'int'>, 'dict1': <class 'dict'>, 'return': <class 'int'>}
+```
+
+## 六、类级别以上
+
+### 6.1子类化内置类型
+
+
+
+### 6.2访问超类中方法
+
+### 6.3使用property和槽（slot）
+
+### 6.4元编程
