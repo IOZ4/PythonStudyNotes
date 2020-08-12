@@ -69,7 +69,7 @@ class MailingAutomatic():
         [t.start() for t in t_list]
 
 if __name__ == '__main__':
-    m = MailingAutomatic(mail_host='smtp.qq.com',mail_user='2497075649@qq.com',mail_pass='hliteqpyaaludjha',
-                         receivers=['guosong.lin@xquant.com','kesu.wang@xquant.com'],receivers_cc=['zongxiang.yu@xquant.com'],
+    m = MailingAutomatic(mail_host='smtp.qq.com',mail_user='',mail_pass='',
+                         receivers=[''],receivers_cc=[''],
                          mail_msg='python邮件自动化测试。。。',mail_subject='邮件测试',attachment=['test.txt','test2.txt'],mail_msg_html="""<p>Python 邮件发送测试...</p><p><a href="https://www.baidu.com">这是一个链接</a></p>""")
     m.send_by_threading()
