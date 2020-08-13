@@ -182,16 +182,247 @@ def sayhello(*args,**kwargs):
 #
 # super(m.__class__,m).mamasay()
 
-'''
-MTW881U3Z5-eyJsaWNlbnNlSWQiOiJNVFc4ODFVM1o1IiwibGljZW5zZWVOYW1lIjoiTnNzIEltIiwiYXNzaWduZWVOYW1lIjoiIiwiYXNzaWduZWVFbWFpbCI6IiIsImxpY2Vuc2VSZXN0cmljdGlvbiI6IkZvciBlZHVjYXRpb25hbCB1c2Ugb25seSIsImNoZWNrQ29uY3VycmVudFVzZSI6ZmFsc2UsInByb2R1Y3RzIjpbeyJjb2RlIjoiSUkiLCJwYWlkVXBUbyI6IjIwMTktMTEtMDYifSx7ImNvZGUiOiJBQyIsInBhaWRVcFRvIjoiMjAxOS0xMS0wNiJ9LHsiY29kZSI6IkRQTiIsInBhaWRVcFRvIjoiMjAxOS0xMS0wNiJ9LHsiY29kZSI6IlBTIiwicGFpZFVwVG8iOiIyMDE5LTExLTA2In0seyJjb2RlIjoiR08iLCJwYWlkVXBUbyI6IjIwMTktMTEtMDYifSx7ImNvZGUiOiJETSIsInBhaWRVcFRvIjoiMjAxOS0xMS0wNiJ9LHsiY29kZSI6IkNMIiwicGFpZFVwVG8iOiIyMDE5LTExLTA2In0seyJjb2RlIjoiUlMwIiwicGFpZFVwVG8iOiIyMDE5LTExLTA2In0seyJjb2RlIjoiUkMiLCJwYWlkVXBUbyI6IjIwMTktMTEtMDYifSx7ImNvZGUiOiJSRCIsInBhaWRVcFRvIjoiMjAxOS0xMS0wNiJ9LHsiY29kZSI6IlBDIiwicGFpZFVwVG8iOiIyMDE5LTExLTA2In0seyJjb2RlIjoiUk0iLCJwYWlkVXBUbyI6IjIwMTktMTEtMDYifSx7ImNvZGUiOiJXUyIsInBhaWRVcFRvIjoiMjAxOS0xMS0wNiJ9LHsiY29kZSI6IkRCIiwicGFpZFVwVG8iOiIyMDE5LTExLTA2In0seyJjb2RlIjoiREMiLCJwYWlkVXBUbyI6IjIwMTktMTEtMDYifSx7ImNvZGUiOiJSU1UiLCJwYWlkVXBUbyI6IjIwMTktMTEtMDYifV0sImhhc2giOiIxMDgyODE0Ni8wIiwiZ3JhY2VQZXJpb2REYXlzIjowLCJhdXRvUHJvbG9uZ2F0ZWQiOmZhbHNlLCJpc0F1dG9Qcm9sb25nYXRlZCI6ZmFsc2V9-aKyalfjUfiV5UXfhaMGgOqrMzTYy2rnsmobL47k8tTpR/jvG6HeL3FxxleetI+W+Anw3ZSe8QAMsSxqVS4podwlQgIe7f+3w7zyAT1j8HMVlfl2h96KzygdGpDSbwTbwOkJ6/5TQOPgAP86mkaSiM97KgvkZV/2nXQHRz1yhm+MT+OsioTwxDhd/22sSGq6KuIztZ03UvSciEmyrPdl2ueJw1WuT9YmFjdtTm9G7LuXvCM6eav+BgCRm+wwtUeDfoQqigbp0t6FQgkdQrcjoWvLSB0IUgp/f4qGf254fA7lXskT2VCFdDvi0jgxLyMVct1cKnPdM6fkHnbdSXKYDWw==-
-MIIElTCCAn2gAwIBAgIBCTANBgkqhkiG9w0BAQsFADAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBMB4XDTE4MTEwMTEyMjk0NloXDTIwMTEwMjEyMjk0NlowaDELMAkGA1UEBhMCQ1oxDjAMBgNVBAgMBU51c2xlMQ8wDQYDVQQHDAZQcmFndWUxGTAXBgNVBAoMEEpldEJyYWlucyBzLnIuby4xHTAbBgNVBAMMFHByb2QzeS1mcm9tLTIwMTgxMTAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxcQkq+zdxlR2mmRYBPzGbUNdMN6OaXiXzxIWtMEkrJMO/5oUfQJbLLuMSMK0QHFmaI37WShyxZcfRCidwXjot4zmNBKnlyHodDij/78TmVqFl8nOeD5+07B8VEaIu7c3E1N+e1doC6wht4I4+IEmtsPAdoaj5WCQVQbrI8KeT8M9VcBIWX7fD0fhexfg3ZRt0xqwMcXGNp3DdJHiO0rCdU+Itv7EmtnSVq9jBG1usMSFvMowR25mju2JcPFp1+I4ZI+FqgR8gyG8oiNDyNEoAbsR3lOpI7grUYSvkB/xVy/VoklPCK2h0f0GJxFjnye8NT1PAywoyl7RmiAVRE/EKwIDAQABo4GZMIGWMAkGA1UdEwQCMAAwHQYDVR0OBBYEFGEpG9oZGcfLMGNBkY7SgHiMGgTcMEgGA1UdIwRBMD+AFKOetkhnQhI2Qb1t4Lm0oFKLl/GzoRykGjAYMRYwFAYDVQQDDA1KZXRQcm9maWxlIENBggkA0myxg7KDeeEwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0PBAQDAgWgMA0GCSqGSIb3DQEBCwUAA4ICAQAF8uc+YJOHHwOFcPzmbjcxNDuGoOUIP+2h1R75Lecswb7ru2LWWSUMtXVKQzChLNPn/72W0k+oI056tgiwuG7M49LXp4zQVlQnFmWU1wwGvVhq5R63Rpjx1zjGUhcXgayu7+9zMUW596Lbomsg8qVve6euqsrFicYkIIuUu4zYPndJwfe0YkS5nY72SHnNdbPhEnN8wcB2Kz+OIG0lih3yz5EqFhld03bGp222ZQCIghCTVL6QBNadGsiN/lWLl4JdR3lJkZzlpFdiHijoVRdWeSWqM4y0t23c92HXKrgppoSV18XMxrWVdoSM3nuMHwxGhFyde05OdDtLpCv+jlWf5REAHHA201pAU6bJSZINyHDUTB+Beo28rRXSwSh3OUIvYwKNVeoBY+KwOJ7WnuTCUq1meE6GkKc4D/cXmgpOyW/1SmBz3XjVIi/zprZ0zf3qH5mkphtg6ksjKgKjmx1cXfZAAX6wcDBNaCL+Ortep1Dh8xDUbqbBVNBL4jbiL3i3xsfNiyJgaZ5sX7i8tmStEpLbPwvHcByuf59qJhV/bZOl8KqJBETCDJcY6O2aqhTUy+9x93ThKs1GKrRPePrWPluud7ttlgtRveit/pcBrnQcXOl1rHq7ByB8CFAxNotRUYL9IF5n3wJOgkPojMy6jetQA5Ogc8Sm7RG6vg1yow==
+# class Animal(object):
+#     def __init__(self,name):
+#         self.name = name
+#     def sleep(self):
+#         print("I'm sleeping")
+#
+# class Cat(Animal):
+#     def __init__(self,name):
+#         super().__init__(name)
+#
+#     def yell(self):
+#         print(self.name+'miao miao miao!!!')
+#     def s(self):
+#         super().sleep()
 
-'''
+#
+# c = Cat('cc')
+# c.s()
+# c.yell()
+# class B():
+#     pass
+# class Animal(B):
+#     def __init__(self,name):
+#         self.name = name
+#     def sleep(self):
+#         print("I'm sleeping")
+#
+# class Dog(Animal):
+#     def yell(self):
+#         print('wang wang wang!!!')
+# class A():
+#     pass
+# class Cat(Dog,A):
+#     def __init__(self,name):
+#         Animal.__init__(self,'cc')
+#
+#     def yell(self):
+#         print(self.name+'miao miao miao!!!')
+#     def s(self):
+#         Animal.sleep(self)
+# def L(myclass):
+#     return [k.__name__ for k in myclass.__mro__]
+#
+#
+# print(L(Cat))
+# class O():
+#     pass
+# class A(O):
+#     def say(self):
+#         print('A')
+# class B(A):
+#     # def say(self):
+#     #     print("B")
+#     pass
+#
+# class C(A):
+#     def say(self):
+#         print('C')
+#
+# class D(B,C):
+#     pass
+
+# d = D()
+# d.say()
+#
+# print(D.mro())
+#
+# def L(myclass):
+#     return [k.__name__ for k in myclass.__mro__]
+#
+# print(L(D))
+
+# class A():
+#     def __init__(self):
+#         print('A')
+#         super().__init__()
+#
+# class B():
+#     def __init__(self):
+#         print('B')
+#         super().__init__()
+#
+# class C(A,B):
+#     def __init__(self):
+#         print("C")
+#         A.__init__(self)
+#         input()
+#         B.__init__(self)
+# C()
+#
+# class A():
+#     def __init__(self,initval=None,name='var'):
+#         self.name = name
+#         self.val = initval
+#
+#     def __get__(self, instance, owner):
+#         print('retrieing', self.name)
+#         return self.val
+#
+#     def __set__(self, instance, value):
+#         print('seting',self.name,self.val)
+#
+#     def __del__(self):
+#         print('del')
+#
+# class X():
+#     x = A(10,'var x')
+#
+# x = X()
+# x.x=20
+# print(x.x)
+
+# class Rectangle():
+#     def __init__(self,x1,y1,x2,y2):
+#         self.x1,self.y1 = x1,y1
+#         self.x2,self.y2 = x2,y2
+#
+#     def _width_get(self):
+#         return self.x2 - self.x1
+#
+#     def _width_set(self,value):
+#         self.x2 = self.x1+value
+#
+#     def _height_get(self):
+#         return self.y2-self.y1
+#
+#     def _height_set(self,value):
+#         self.y2 = self.y1 + value
+#
+#     @property
+#     def height(self):
+#         """rectangle height measured from top"""
+#         return self.y2-self.y1
+#
+#     @height.setter
+#     def height(self,value):
+#         self.y2=self.y1+value
+#
+#     @height.deleter
+#     def height(self):
+#         del self.height
+#
+#     width = property(
+#         _width_get,_width_set,
+#         doc="rectangle width measured from left"
+#     )
+#     # height = property(
+#     #     _height_get, _height_set,
+#     #     doc="rectangle height measured from top"
+#     # )
+#
+#     def __repr__(self):
+#         return "{}({},{},{},{})".format(
+#             self.__class__.__name__,
+#             self.x1,self.y1,self.x2,self.y2
+#         )
+#
+# if __name__ == '__main__':
+#     rectangle = Rectangle(10,10,25,34)
+#     print(rectangle.width)
+#     rectangle.width=100
+#     print(rectangle.width)
+#     print(rectangle.x1,rectangle.x2)
+#     print(rectangle)
 
 
+# class A():
+#     def __init__(self,name):
+#         self.name = name
+#
+# a = A('yu')
+# print(dir(a))
+# print(a.__dict__)
 
 
+class B():
+    __slots__ = ['ice','cream']
 
+b = B()
+b.ice = False
+b.cream = True
+b.icy = False
+
+
+print(dir(B))
+a = B()
+print(dir(a))
+
+class C(B):
+    pass
+c= C()
+c.icy = False
+c.ss = 'ss'
+print(c.icy)
+print(dir(c))
+
+# class A():
+#     def __init__(self):
+#         self.name = 'yu'
+#     def say(self):
+#         print("hello")
+#
+# def short_repr(cls):
+#     cls.__repr__ = lambda self: super(cls,self).__repr__()[:3]
+#     return cls
+#
+# @short_repr
+# class ABCDEFGHIJK():
+#     pass
+
+
+# class A():
+#     def __init__(self):
+#         print("A")
+#         super().__init__()
+#
+# class B():
+#     def __init__(self):
+#         print("B")
+#         super().__init__()
+#
+# class C(A,B):
+#     def __init__(self):
+#         print('C')
+#         A.__init__(self)
+#         B.__init__(self)
+#
+# print(C.mro())
+# C()
+
+
+def parametrized_short_repr(max_width=8):
+    "缩短表示的参数化装饰器"
+    def parametrized(cls):
+        """内部包装函数，是实际的装饰器"""
+        class ShortlyRepresented(cls):
+            """提供装饰器行为的子类"""
+            def __repr__(self):
+                return super() .__repr__()[:max_width]
+        return ShortlyRepresented
+    return parametrized
 
 
 
