@@ -1,6 +1,8 @@
 # Java学习笔记
 
-## 1.2 Java 语言特点
+## 一、开篇
+
+### 1.2 Java 语言特点
 
 Java 语言能够流行起来，并长久不衰，得益于 Java 语言有很多优秀的关键特点。这
 
@@ -133,3 +135,7 @@ Java 应用程序在运行过程中，可以动态的加载各种类库，即使
 Java 不仅是编程语言，还是一个开发平台，Sun 公司根据 Java 应用领域的不同将 Java
 
 分成三个平台：Java SE、Java EE 和 Java ME。
+
+### 1.3[java下载](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+
+### 1.4[idea下载](https://www.jetbrains.com/idea/download/)和[破解](https://www.jb51.net/article/186186.htm)
