@@ -464,10 +464,244 @@ print(annotation.__annotations__)
 
 ### 6.1子类化内置类型
 
-
+Python的子类化内置类型非常简单。有-一个叫作object的内置类型，它是所有内置类型的共同祖先，也是所有没有显式指定父类的用户自定义类的共同祖先。正由于此，每当需要实现与某个内置类型具有相似行为的类时,最好的方法就是将这个内置类型子类化。
 
 ### 6.2访问超类中方法
 
-### 6.3使用property和槽（slot）
+* 旧式
+
+```python
+class Cat(Animal):
+    def __init__(self,name):
+        Animal.__init__(self,'cc')
+
+    def yell(self):
+        print(self.name+'miao miao miao!!!')
+    def s(self):
+        Animal.sleep(self)
+
+c = Cat('cc')
+c.s()
+c.yell()
+```
+
+> self 作为当前实例传入，调用类的方法
+
+* 新式 super（）
+
+```python
+class Animal(object):
+    def __init__(self,name):
+        self.name = name
+    def sleep(self):
+        print("I'm sleeping")
+
+class Cat(Animal):
+    def __init__(self,name):
+        super().__init__(name)
+
+    def yell(self):
+        print(self.name+'miao miao miao!!!')
+    def s(self):
+        super().sleep()
+class Dog(Animal):
+    def yell(self):
+        print('wang wang wang!!!')
+
+c = Cat('cc')
+c.s()
+c.yell()
+```
+
+> 在python2.x中有旧时类和新式类，旧式类无法使用super（）函数，在python3.x中写向后兼容的程序时，如果没有继承object 在pyhton2.x中将被解释为旧式类  super（）函数无法执行  python3.x不再保留旧式类的概念，并且都隐性的继承object
+
+* MRO
+
+在python2.x中旧式类，关于菱形继承：从左到右 深度优先  新式类：从左到右 广度优先（MRO，C3算法）
+
+* 混用super和显示类调用
+
+```python
+class A():
+    def __init__(self):
+        print("A")
+        super().__init__()
+
+class B():
+    def __init__(self):
+        print("B")
+        super().__init__()
+
+class C(A,B):
+    def __init__(self):
+        print('C')
+        A.__init__(self)
+        B.__init__(self)
+
+print(C.mro())
+C()
+```
+
+```sh
+[<class '__main__.C'>, <class '__main__.A'>, <class '__main__.B'>, <class 'object'>]
+C
+A
+B
+B
+
+```
+
+> 产生问题的原因
+
+- 应该避免多重继承:可以采用第14章介绍的一-些设计模式来代替它。
+- super的使用必须-致:在类的层次结构中，要么全部用super,要么全不用。混用super: 和传统调用是一种混乱的做法。人们往往会避免使用super这样代码会更清晰
+- 如果代码的使用范围包括Python 2，在Python 3中也应该显式地继承自object:在Python 2中，没有指定任何祖先的类被认为是旧式类。在Python 2中应避免混用旧式类和新式类。
+- 调用父类时必须查看类的层次结构:为了避免出现任何问题，每次调用父类时，必须快速查看有关的MRO (使用_ mro_ )。
+
+### 6.3高级属性访问模式
+
+#### 6.3.1property 内置数据描述符
+
+```python
+class Rectangle():
+    def __init__(self,x1,y1,x2,y2):
+        self.x1,self.y1 = x1,y1
+        self.x2,self.y2 = x2,y2
+
+    def _width_get(self):
+        return self.x2 - self.x1
+
+    def _width_set(self,value):
+        self.x2 = self.x1+value
+
+    def _height_get(self):
+        return self.y2-self.y1
+
+    def _height_set(self,value):
+        self.y2 = self.y1 + value
+
+    @property
+    def height(self):
+        """rectangle height measured from top"""
+        return self.y2-self.y1
+
+    @height.setter
+    def height(self,value):
+        self.y2=self.y1+value
+
+    @height.deleter
+    def height(self):
+        del self.height
+
+    width = property(
+        _width_get,_width_set,
+        doc="rectangle width measured from left"
+    )
+    # height = property(
+    #     _height_get, _height_set,
+    #     doc="rectangle height measured from top"
+    # )
+
+    def __repr__(self):
+        return "{}({},{},{},{})".format(
+            self.__class__.__name__,
+            self.x1,self.y1,self.x2,self.y2
+        )
+
+if __name__ == '__main__':
+    rectangle = Rectangle(10,10,25,34)
+    print(rectangle.width)
+    rectangle.width=100
+    print(rectangle.width)
+    print(rectangle.x1,rectangle.x2)
+    print(rectangle)
+
+```
+
+#### 6.3.2描述符
+
+描述符(descriptor) 允许你自定义在引用-一个对象的属性时应该完成的事情。描述符是Python中复杂属性访问的基础。它在内部被用于实现property、方法、类方法、静态方法和susupeer类型。它是-一个类，定义了另一个类的属性的访问方式。换句话说，一个类可以将属性管理委托给另一个类。描述符类基于3个特殊方法，这3个方法组成了描述符协议( descriptor protocol):
+
+* _set__ (self, obj, type=None): 在设置属性时将调用这一 方法。在下面的示例中，我们将其称为setter.
+
+- _ get__ (self, obj, value):在读取属性时将调用这一 方法(被称为getter)。
+- _ delete__ (self, obj):对属性调用de1时将调用这一方法。
+
+实现了\_\_get\_\_ ()和_ set_\_() 的描述符被称为数据描述符( data descriptor)。如果只实现了\_\_get\_\_ ()， 那么就被称为非数据描述符(non-data descriptor)。
+
+```python
+class A():
+    def __init__(self,initval=None,name='var'):
+        self.name = name
+        self.val = initval
+
+    def __get__(self, instance, owner):
+        print('retrieing', self.name)
+        return self.val
+
+    def __set__(self, instance, value):
+        print('seting',self.name,self.val)
+
+    def __del__(self):
+        print('del')
+
+class X():
+    x = A(10,'var x')
+
+x = X()
+x.x=20
+print(x.x)
+```
+
+```sh
+seting var x 10
+retrieing var x
+10
+del
+
+```
+
+#### 6.3.3槽
+
+```python
+class B():
+    __slots__ = ['ice','cream']
+
+b = B()
+b.ice = False
+b.cream = True
+b.icy = False
+
+print(dir(B))
+a = B()
+print(dir(a))
+
+class C(B):
+    pass
+c= C()
+c.icy = False
+c.ss = 'ss'
+print(c.icy)
+print(dir(c))
+```
+
+
 
 ### 6.4元编程
+
+#### 6.4.1类装饰器
+
+```python
+def parametrized_short_repr(max_width=8):
+    "缩短表示的参数化装饰器"
+    def parametrized(cls):
+        """内部包装函数，是实际的装饰器"""
+        class ShortlyRepresented(cls):
+            """提供装饰器行为的子类"""
+            def __repr__(self):
+                return super() .__repr__()[:max_width]
+        return ShortlyRepresented
+    return parametrized
+
+```
+
