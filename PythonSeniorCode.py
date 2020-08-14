@@ -357,26 +357,26 @@ def sayhello(*args,**kwargs):
 # print(a.__dict__)
 
 
-class B():
-    __slots__ = ['ice','cream']
-
-b = B()
-b.ice = False
-b.cream = True
-b.icy = False
-
-
-print(dir(B))
-a = B()
-print(dir(a))
-
-class C(B):
-    pass
-c= C()
-c.icy = False
-c.ss = 'ss'
-print(c.icy)
-print(dir(c))
+# class B():
+#     __slots__ = ['ice','cream']
+#
+# b = B()
+# b.ice = False
+# b.cream = True
+# b.icy = False
+#
+#
+# print(dir(B))
+# a = B()
+# print(dir(a))
+#
+# class C(B):
+#     pass
+# c= C()
+# c.icy = False
+# c.ss = 'ss'
+# print(c.icy)
+# print(dir(c))
 
 # class A():
 #     def __init__(self):
@@ -403,32 +403,140 @@ print(dir(c))
 #         print("B")
 #         super().__init__()
 #
-# class C(A,B):
+# class D():
+#     def __init__(self):
+#         print("D")
+#         super().__init__()
+#
+# class C(A,B,D):
 #     def __init__(self):
 #         print('C')
 #         A.__init__(self)
 #         B.__init__(self)
+#         D.__init__(self)
 #
 # print(C.mro())
 # C()
 
 
-def parametrized_short_repr(max_width=8):
-    "缩短表示的参数化装饰器"
-    def parametrized(cls):
-        """内部包装函数，是实际的装饰器"""
-        class ShortlyRepresented(cls):
-            """提供装饰器行为的子类"""
-            def __repr__(self):
-                return super() .__repr__()[:max_width]
-        return ShortlyRepresented
-    return parametrized
+# def parametrized_short_repr(max_width=8):
+#     "缩短表示的参数化装饰器"
+#     def parametrized(cls):
+#         """内部包装函数，是实际的装饰器"""
+#         class ShortlyRepresented(cls):
+#             """提供装饰器行为的子类"""
+#             def __repr__(self):
+#                 return super() .__repr__()[:max_width]
+#         return ShortlyRepresented
+#     return parametrized
+
+# def parametrized_short_repr(max_width=8):
+#     "缩短表示的参数化装饰器"
+#     def parametrized(cls):
+#         """内部包装函数，是实际的装饰器"""
+#         class ShortlyRepresented(cls):
+#             """提供装饰器行为的子类"""
+#             def __repr__(self):
+#                 return super() .__repr__()[:max_width]
+#         return ShortlyRepresented
+#     return parametrized
+#
+# class B():
+#     def __repr__(self):
+#         return 'Bsdhjakhjkasdhjkdkhas'
+#
+# @parametrized_short_repr()
+# class A(B):
+#     pass
+#
+# print(A().__repr__())
+
+# class A():
+#     def __new__(cls,value,*args, **kwargs):
+#         return super().__new__(cls) if value != 0 else None
+#
+#     def __init__(self,value):
+#         print('initing ',value)
+#
+# A(0)
+
+def method(self):
+    return 1
+
+klass = type('MyClass',(object,),{'method':method})
+
+instance = klass()
+print(instance.method())
+
+# class MyClass():
+#     def method(self):
+#         return 1
+#
+# instance = MyClass()
+# print(instance.method())
+
+# class A(metaclass=)
 
 
+# b = type('B',(object,),{'want':'money'})
+# print(b.__name__)
+# class A(B):
+#     pass
+#
+# a = A()
+# print(a.want)
+
+# class A(metaclass=type):
+#     '这是A类'
+#     pass
 
 
+# print(A.__name__)
+# print(A.__bases__)
+# print(A.__dict__)
+
+# class A():
+#     def __new__(cls, *args, **kwargs):
+#         pass
+#     @classmethod
+#     def __prepare__(metacls, name, bases):
+
+# def a():
+#     print('hello')
+#
+# eval('print("hello")')
 
 
+# print(eval('"A" if 0<-1 else "B"'))
 
+# print(globals())
 
+# def a():
+#     a=1
+#     b=2
+#     loc = locals()
+#     print(loc)
+    # exec('c = a+b')
+    # c= loc['c']
+    # print(c)
 
+# a()
+# exec ('print("hello")')
+# exec("""
+# print('hello')
+# """)
+# pre = 'print("hello",a,b)'
+# exec(pre,{'a':2,'b':3})
+# str1 = 'for i in range(10):print(i)'
+# c = compile(str1,'','exec')
+# exec(c)
+# def a(**kwargs):
+#     print(kwargs['cc'])
+#
+# a(cc='ss')
+
+def a(b,c):
+    assert isinstance(b,(int,float)),'类型错误'
+    print(b,c)
+
+a('2',2)
