@@ -468,7 +468,7 @@ Python的子类化内置类型非常简单。有-一个叫作object的内置类�
 
 ### 6.2访问超类中方法
 
-* 旧式
+#### 6.2.1旧式
 
 ```python
 class Cat(Animal):
@@ -487,7 +487,7 @@ c.yell()
 
 > self 作为当前实例传入，调用类的方法
 
-* 新式 super（）
+#### 6.2.2新式 super（）
 
 ```python
 class Animal(object):
@@ -515,11 +515,11 @@ c.yell()
 
 > 在python2.x中有旧时类和新式类，旧式类无法使用super（）函数，在python3.x中写向后兼容的程序时，如果没有继承object 在pyhton2.x中将被解释为旧式类  super（）函数无法执行  python3.x不再保留旧式类的概念，并且都隐性的继承object
 
-* MRO
+#### 6.2.3python的继承规则总结
 
 在python2.x中旧式类，关于菱形继承：从左到右 深度优先  新式类：从左到右 广度优先（MRO，C3算法）
 
-* 混用super和显示类调用
+#### 6.2.4混用super和显示类调用产生的问题
 
 ```python
 class A():
@@ -551,7 +551,9 @@ B
 
 ```
 
-> 产生问题的原因
+> 这是python自身的特性也算是坑吧，python的多继承和其他语言相比是有问题的，python会优先继承A类，而B类会默认被底层处理成更高一级，你试一下把C的继承顺序颠倒一下，A类就会被底层默认处理成更高一级 。在结构上A和B是同级  但是那个继承关系列表中其实也是代表了等级关系。Python的多继承是讲究就近原则的
+
+#### 6.2.5解决办法
 
 - 应该避免多重继承:可以采用第14章介绍的一-些设计模式来代替它。
 - super的使用必须-致:在类的层次结构中，要么全部用super,要么全不用。混用super: 和传统调用是一种混乱的做法。人们往往会避免使用super这样代码会更清晰
@@ -703,5 +705,34 @@ def parametrized_short_repr(max_width=8):
         return ShortlyRepresented
     return parametrized
 
+class B():
+    def __repr__(self):
+        return 'Bsdhjakhjkasdhjkdkhas'
+
+@parametrized_short_repr()
+class A(B):
+    pass
+
+print(A().__repr__())
+
 ```
 
+#### 6.4.2使用\_\_new\_\_方法覆写实例创建过程
+
+#### 6.4.3元类
+
+[一篇好的元类解释文章](https://www.jianshu.com/p/c1ca0b9c777d)
+
+```python
+def method(self):
+    return 1
+
+klass = type('MyClass',(object,),{'method':method})
+
+instance = klass()
+print(instance.method())
+```
+
+> type(\_\_name\_\_,bases,\_\_dict\_\_)  类名  父类列表  属性、方法字典
+
+## 七、并发
