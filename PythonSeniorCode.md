@@ -736,3 +736,232 @@ print(instance.method())
 > type(\_\_name\_\_,bases,\_\_dict\_\_)  类名  父类列表  属性、方法字典
 
 ## 七、并发
+
+如果两个事件互不影响，则两个事件是并发的。
+
+### 7.1什么事多线程
+
+线程是执行线程的缩写。程序员可以将他或她的工作拆分到线程中，这些线程同时运行并共享同一内存上下文。除非你的代码依赖第三方资源，否则多线程不会在单核处理器上加速，甚至会增加线程管理的开销。多线程得益于多处理器或多核机器，将在每个CPU核上并行化每个线程执行，从而使程序更快。请注意，这是一个通用规则，应该适用于大多数的编程语言。
+
+### 7.2多线程常见问题
+
+* 竞争冒险
+
+如果两个线程更新相同的没有任何保护的数据，则会发生竞态条件。这被称为竞争冒险(racehazard),这里可能发生意外的结果，因为每个线程运行的代码对数据的状态做出了错误的假设。
+
+* 锁机制有助于保护数据，在多线程编程中，总是要确保线程以安全的方式访问资源。
+* 死锁
+
+两个线程锁定一个 资源，并尝试获取另-一个线程锁定的资源。它们将永远彼此等待。这被称为死锁( deadlock),并且很难调试。
+
+* 可重入锁(Reentrantlocks)
+
+它通过确保线程在尝试两次锁定资源时不会被锁定。
+
+* 时间分片机制
+
+时间分片(timeslicing) 机制。这里，CPU可以很快地从一- 个线程切换到另一个线程， 造成了线程同时运行的错觉。这也是在处理级别完成的。没有多个处理单元的并行显然是虚拟的，并且在这样的硬件上运行多个线程不会改善性能
+
+### 7.3python如何处理多线程
+
+* 全局锁串行化
+
+所有访问Python对象的线程都会被--个全局锁串行化。这是由许多解释器的内部结构完成的，和第三方C代码- -样，它们不是线程安全的，需要进行保护。
+
+> 全局解释器锁机制(GIL)
+
+* python多线程的意义
+
+当线程仅包含纯Python代码时，使用线程来加速程序没有什么意义，因为GIL会将其串行化。但请记住，GIL只是强制在任何时候只有一一个线程可以执行Python代码。实际上，全局解释器锁在许多阻塞系统调用上被释放，并且可以在不使用任何Python/C API 函数的C扩展的部分中被释放。这意味着，多个线程可以执行IO操作或在某些第三方扩展中并行执行C代码。对于使用外部资源或涉及C代码的非纯粹的代码块，多线程对于等待第三方资源返回对于使用外部资源或涉及C代码的非纯粹的代码块，多线程对于等待第三方资源返回对于使用外部资源或涉及C代码的非纯粹的代码块，多线程对于等待第三方资源返回与用户交互，同时在所谓的后台中执行一些繁重的计算。
+
+> 并不是Python语言的每个实现中都会有GIL。它是CPython, Stackless Python和PyPy的限制，但在Jython和IronPython中不存在
+
+### 7.4何时使用python多线程
+
+* 构建响应式界面
+* 委派工作
+* 构建多用户应用程序
+
+### 7.5一个多线程使用的例子
+
+#### 7.5.1使用threading模块创建线程
+
+- **run():** 用以表示线程活动的方法。
+- **start()**:启动线程活动。
+- **join([time]):** 等待至线程中止。这阻塞调用线程直至线程的join() 方法被调用中止-正常退出或者抛出未处理的异常-或者是可选的超时发生。
+- **isAlive():** 返回线程是否活动的。
+- **getName():** 返回线程名。
+- **setName():** 设置线程名。
+
+```python
+import threading
+import time
+
+exitFlag = 0
+
+class myThread (threading.Thread):
+    def __init__(self, threadID, name, counter):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+    def run(self):
+        print ("开始线程：" + self.name)
+        print_time(self.name, self.counter, 5)
+        print ("退出线程：" + self.name)
+
+def print_time(threadName, delay, counter):
+    while counter:
+        if exitFlag:
+            threadName.exit()
+        time.sleep(delay)
+        print ("%s: %s" % (threadName, time.ctime(time.time())))
+        counter -= 1
+
+# 创建新线程
+thread1 = myThread(1, "Thread-1", 1)
+thread2 = myThread(2, "Thread-2", 2)
+
+# 开启新线程
+thread1.start()
+thread2.start()
+# 等待所有线程运行完毕
+thread1.join()
+thread2.join()
+print ("退出主线程")
+```
+
+#### 7.5.2线程同步
+
+如果多个线程共同对某个数据修改，则可能出现不可预料的结果，为了保证数据的正确性，需要对多个线程进行同步。
+
+使用 Thread 对象的 Lock 和 Rlock 可以实现简单的线程同步，这两个对象都有 acquire 方法和 release 方法，对于那些需要每次只允许一个线程操作的数据，可以将其操作放到 acquire 和 release 方法之间
+
+```python
+import threading
+import time
+
+class myThread (threading.Thread):
+    def __init__(self, threadID, name, counter):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+    def run(self):
+        print ("开启线程： " + self.name)
+        # 获取锁，用于线程同步
+        threadLock.acquire()
+        print_time(self.name, self.counter, 3)
+        # 释放锁，开启下一个线程
+        threadLock.release()
+
+def print_time(threadName, delay, counter):
+    while counter:
+        time.sleep(delay)
+        print ("%s: %s" % (threadName, time.ctime(time.time())))
+        counter -= 1
+
+threadLock = threading.Lock()
+threads = []
+
+# 创建新线程
+thread1 = myThread(1, "Thread-1", 1)
+thread2 = myThread(2, "Thread-2", 2)
+
+# 开启新线程
+thread1.start()
+thread2.start()
+
+# 添加线程到线程列表
+threads.append(thread1)
+threads.append(thread2)
+
+# 等待所有线程完成
+for t in threads:
+    t.join()
+print ("退出主线程")
+```
+
+#### 7.5.3线程优先级队列（ Queue）
+
+Python 的 Queue 模块中提供了同步的、线程安全的队列类，包括FIFO（先入先出)队列Queue，LIFO（后入先出）队列LifoQueue，和优先级队列 PriorityQueue。
+
+这些队列都实现了锁原语，能够在多线程中直接使用，可以使用队列来实现线程间的同步。
+
+Queue 模块中的常用方法:
+
+
+
+- Queue.qsize() 返回队列的大小
+- Queue.empty() 如果队列为空，返回True,反之False
+- Queue.full() 如果队列满了，返回True,反之False
+- Queue.full 与 maxsize 大小对应
+- Queue.get([block[, timeout]])获取队列，timeout等待时间
+- Queue.get_nowait() 相当Queue.get(False)
+- Queue.put(item) 写入队列，timeout等待时间
+- Queue.put_nowait(item) 相当Queue.put(item, False)
+- Queue.task_done() 在完成一项工作之后，Queue.task_done()函数向任务已经完成的队列发送一个信号
+- Queue.join() 实际上意味着等到队列为空，再执行别的操作
+
+```python
+import queue
+import threading
+import time
+
+exitFlag = 0
+
+class myThread (threading.Thread):
+    def __init__(self, threadID, name, q):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.q = q
+    def run(self):
+        print ("开启线程：" + self.name)
+        process_data(self.name, self.q)
+        print ("退出线程：" + self.name)
+
+def process_data(threadName, q):
+    while not exitFlag:
+        queueLock.acquire()
+        if not workQueue.empty():
+            data = q.get()
+            queueLock.release()
+            print ("%s processing %s" % (threadName, data))
+        else:
+            queueLock.release()
+        time.sleep(1)
+
+threadList = ["Thread-1", "Thread-2", "Thread-3"]
+nameList = ["One", "Two", "Three", "Four", "Five"]
+queueLock = threading.Lock()
+workQueue = queue.Queue(10)
+threads = []
+threadID = 1
+
+# 创建新线程
+for tName in threadList:
+    thread = myThread(threadID, tName, workQueue)
+    thread.start()
+    threads.append(thread)
+    threadID += 1
+
+# 填充队列
+queueLock.acquire()
+for word in nameList:
+    workQueue.put(word)
+queueLock.release()
+
+# 等待队列清空
+while not workQueue.empty():
+    pass
+
+# 通知线程是时候退出
+exitFlag = 1
+
+# 等待所有线程完成
+for t in threads:
+    t.join()
+print ("退出主线程")
+```
+
