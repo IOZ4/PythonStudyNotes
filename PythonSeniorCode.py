@@ -11,10 +11,11 @@
 # #
 # # @timer
 # from urllib import request
+# from threading import Thread
 
 
-def sayhello(*args,**kwargs):
-    print(args)
+# def sayhello(*args,**kwargs):
+#     print(args)
 # #
 # # sayhello()
 # #
@@ -641,6 +642,8 @@ Thread-2: Mon Aug 17 13:54:53 2020
 退出线程：Thread-2
 退出主线程
 """
+import time
+from multiprocessing.queues import Queue
 
 """
 开始线程：Thread-1
@@ -719,16 +722,147 @@ Thread-2: Mon Aug 17 13:55:19 2020
 #     t.join()
 # print ("退出主线程")
 
+# from threading import Thread
+# import threading
+
+# threadLock = threading.Lock()
+#
+# threadLock.locked()
+#
+# threadLock.release()
+
+# from threading import Thread
+# import time,threading
+# import os
+#
+# def sing():
+#     for i in range(10):
+#         time.sleep(1)
+#         print("I'm singing and {} and {}".format(os.getpid(),threading.current_thread().name))
+#
+# def dance():
+#     for i in range(10):
+#         time.sleep(1)
+#         print("I'm dancing and {} and {}".format(os.getpid(),threading.current_thread().name))
+#
+# t1 = Thread(target=sing,name='t1')
+# t2 = Thread(target=dance,name='t2')
+#
+# t1.start()
+# t2.start()
+
+
+
+# from threading import Thread
+# import time
+# import threading
+# import os
+#
+# TICKET =10
+# threading_lock = threading.Lock()
+#
+# def sell_1():
+#     global TICKET
+#     while True:
+#         threading_lock.acquire()
+#         if TICKET>0:
+#             time.sleep(0.3)
+#             TICKET-=1
+#             threading_lock.release()
+#             print('购票成功 PID为{} 当前线程是{}'.format(os.getpid(),threading.current_thread().name))
+#         else:
+#             print('票卖完了 剩余{} PID为{} 当前线程是{}'.format(TICKET, os.getpid(), threading.current_thread().name))
+#             threading_lock.release()
+#             break
+#
+#
+# def sell_2():
+#     global TICKET
+#     while True:
+#         threading_lock.acquire()
+#         if TICKET>0:
+#             time.sleep(0.3)
+#             TICKET-=1
+#             threading_lock.release()
+#             print('购票成功 PID为{} 当前线程是{}'.format(os.getpid(),threading.current_thread().name))
+#         else:
+#             print('票卖完了 剩余{} PID为{} 当前线程是{}'.format(TICKET, os.getpid(), threading.current_thread().name))
+#             threading_lock.release()
+#             break
+#
+# t1 = Thread(target=sell_1,name='t1')
+# t2 = Thread(target=sell_2,name='t2')
+#
+# t1.start()
+# t2.start()
+
 from threading import Thread
-import threading
+# import time
+# import threading
+# import queue
+#
+# q = queue.Queue()
+#
+# def produce():
+#     for i in range(10):
+#         time.sleep(2)
+#         q.put('b{}'.format(i))
+#         print('+++生产面包b{}'.format(i))
+#
+# def consumer():
+#     while True:
+#         time.sleep(0.6)
+#         print("---购买面包 {}".format(q.get()))
+#
+# produce_t = threading.Thread(target=produce,name='produce_t')
+# consumer_t = threading.Thread(target=consumer,name='consumer')
+#
+# produce_t.start()
+# consumer_t.start()
 
-threadLock = threading.Lock()
 
-threadLock.locked()
+# import multiprocessing
+# import os
+# import time
+#
+# def sing():
+#     for i in range(10):
+#         time.sleep(1)
+#         print("I'm singing and {}".format(os.getpid()))
+#
+# def dance():
+#     for i in range(10):
+#         time.sleep(1)
+#         print("I'm dancing and {}".format(os.getpid()))
+#
+# if __name__ == '__main__':
+#     p1 = multiprocessing.Process(target=sing,name='t1')
+#     p2 = multiprocessing.Process(target=dance,name='t2')
+#
+#     p1.start()
+#     p2.start()
 
-threadLock.release()
-
-
-
-
-
+# import multiprocessing
+# import os
+# import time
+#
+# q = multiprocessing.Queue(2)
+#
+# def produce(q:Queue):
+#     for i in range(10):
+#         time.sleep(0.3)
+#         q.put('b{}'.format(i))
+#         print('生产++++++b{} and {}'.format(i,os.getpid()))
+#
+# def consumer(q):
+#     for i in range(10):
+#         time.sleep(0.6)
+#         print('买面包---------{} and {}'.format(q.get(),os.getpid()))
+#
+# if __name__ == '__main__':
+#
+#     p1 = multiprocessing.Process(target=produce,args=(q,))
+#     p2 = multiprocessing.Process(target=consumer,args=(q,))
+#
+#     p1.start()
+#     p2.start()
