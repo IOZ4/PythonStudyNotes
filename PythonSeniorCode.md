@@ -739,7 +739,7 @@ print(instance.method())
 
 如果两个事件互不影响，则两个事件是并发的。
 
-### 7.1什么事多线程
+### 7.1什么是多线程
 
 线程是执行线程的缩写。程序员可以将他或她的工作拆分到线程中，这些线程同时运行并共享同一内存上下文。除非你的代码依赖第三方资源，否则多线程不会在单核处理器上加速，甚至会增加线程管理的开销。多线程得益于多处理器或多核机器，将在每个CPU核上并行化每个线程执行，从而使程序更快。请注意，这是一个通用规则，应该适用于大多数的编程语言。
 
@@ -964,4 +964,352 @@ for t in threads:
     t.join()
 print ("退出主线程")
 ```
+
+## 八、多线程 多进程 的另一个理解方向
+
+### 8.1多线程实现多任务
+
+```python
+from threading import Thread
+import time,threading
+import os
+
+def sing():
+    for i in range(10):
+        time.sleep(1)
+        print("I'm singing and {} and {}".format(os.getpid(),threading.current_thread().name))
+
+def dance():
+    for i in range(10):
+        time.sleep(1)
+        print("I'm dancing and {} and {}".format(os.getpid(),threading.current_thread().name))
+
+t1 = Thread(target=sing,name='t1')
+t2 = Thread(target=dance,name='t2')
+
+t1.start()
+t2.start()
+```
+
+### 8.2多线程实现聊天室
+
+```python
+import socket
+from threading import Thread
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+s.bind(('192.168.6.192', 9090))
+
+def charge_from():
+    while True:
+        content,addr = s.recvfrom(1024)
+        print("在IP:{}的端口:{},给我们发送了:{}".format(addr[0],addr[1],content.decode('utf8')))
+
+
+
+def send_to(content=None):
+    while True:
+        content = input()
+        s.sendto(content.encode('utf8'),('192.168.6.192',8080))
+
+charge = Thread(target=charge_from)
+send = Thread(target=send_to)
+
+charge.start()
+send.start()
+
+charge.join()
+send.join()
+s.close()
+print("聊天结束")
+```
+
+> 与网络调试助手实现聊天   当两个py端进行聊天时总是报错
+
+### 8.3多线程共享全局变量
+
+```python
+from threading import Thread
+import time
+import threading
+import os
+
+TICKET =10
+
+
+def sell_1():
+    global TICKET
+    while True:
+        if TICKET>0:
+            time.sleep(0.3)
+            TICKET-=1
+            print('购票成功 PID为{} 当前线程是{}'.format(os.getpid(),threading.current_thread().name))
+        else:
+            print('票卖完了 剩余{} PID为{} 当前线程是{}'.format(TICKET, os.getpid(), threading.current_thread().name))
+            break
+
+
+def sell_2():
+    global TICKET
+    while True:
+        if TICKET>0:
+            time.sleep(0.3)
+            TICKET-=1
+            print('购票成功 PID为{} 当前线程是{}'.format(os.getpid(),threading.current_thread().name))
+        else:
+            print('票卖完了 剩余{} PID为{} 当前线程是{}'.format(TICKET,os.getpid(),threading.current_thread().name))
+            break
+
+t1 = Thread(target=sell_1,name='t1')
+t2 = Thread(target=sell_2,name='t2')
+
+t1.start()
+t2.start()
+```
+
+* 在实现多线程全局变量共享时也容易造成数据安全问题
+
+```sh
+购票成功 PID为14836 当前线程是t1
+购票成功 PID为14836 当前线程是t2
+购票成功 PID为14836 当前线程是t1
+购票成功 PID为14836 当前线程是t2
+购票成功 PID为14836 当前线程是t1
+购票成功 PID为14836 当前线程是t2
+购票成功 PID为14836 当前线程是t1
+购票成功 PID为14836 当前线程是t2
+购票成功 PID为14836 当前线程是t1
+购票成功 PID为14836 当前线程是t2
+票卖完了 剩余0 PID为14836 当前线程是t2
+购票成功 PID为14836 当前线程是t1
+票卖完了 剩余-1 PID为14836 当前线程是t1
+
+Process finished with exit code 0
+```
+
+8.4多线程的数据安全为题解决--threading.Lock()
+
+```python
+from threading import Thread
+import time
+import threading
+import os
+
+TICKET =10
+threading_lock = threading.Lock()
+
+def sell_1():
+    global TICKET
+    while True:
+        threading_lock.acquire()
+        if TICKET>0:
+            time.sleep(0.3)
+            TICKET-=1
+            threading_lock.release()
+            print('购票成功 PID为{} 当前线程是{}'.format(os.getpid(),threading.current_thread().name))
+        else:
+            print('票卖完了 剩余{} PID为{} 当前线程是{}'.format(TICKET, os.getpid(), threading.current_thread().name))
+            threading_lock.release()
+            break
+
+
+def sell_2():
+    global TICKET
+    while True:
+        threading_lock.acquire()
+        if TICKET>0:
+            time.sleep(0.3)
+            TICKET-=1
+            threading_lock.release()
+            print('购票成功 PID为{} 当前线程是{}'.format(os.getpid(),threading.current_thread().name))
+        else:
+            print('票卖完了 剩余{} PID为{} 当前线程是{}'.format(TICKET, os.getpid(), threading.current_thread().name))
+            threading_lock.release()
+            break
+            
+t1 = Thread(target=sell_1,name='t1')
+t2 = Thread(target=sell_2,name='t2')
+
+t1.start()
+t2.start()
+```
+
+> 在敏感数据被调用之前上锁
+
+### 8.4多线程之间的通信
+
+```python
+import time
+import threading
+import queue
+
+q = queue.Queue()
+
+def produce():
+    for i in range(10):
+        time.sleep(2)
+        q.put('b{}'.format(i))
+        print('+++生产面包b{}'.format(i))
+
+def consumer():
+    while True:
+        time.sleep(0.6)
+        print("---购买面包 {}".format(q.get()))
+
+produce_t = threading.Thread(target=produce,name='produce_t')
+consumer_t = threading.Thread(target=consumer,name='consumer')
+
+produce_t.start()
+consumer_t.start()
+```
+
+> queue.Queue() 是属于FIFO先进先出的队列
+
+### 8.5多进程实现
+
+```python
+import multiprocessing
+import os
+import time
+
+def sing():
+    for i in range(10):
+        time.sleep(1)
+        print("I'm singing and {}".format(os.getpid()))
+
+def dance():
+    for i in range(10):
+        time.sleep(1)
+        print("I'm dancing and {}".format(os.getpid()))
+
+if __name__ == '__main__':
+    p1 = multiprocessing.Process(target=sing,name='t1')
+    p2 = multiprocessing.Process(target=dance,name='t2')
+
+    p1.start()
+    p2.start()
+```
+
+> 在windows环境里多进程实现要在当先py文件 所以加 `if __name__ == '__main__':` mac系统不用
+
+> 多进程之间无法共享全局变量
+
+### 8.6多进程之间的通信
+
+```python
+import multiprocessing
+import os
+import time
+
+q = multiprocessing.Queue(2)
+
+def produce(q):
+    for i in range(10):
+        time.sleep(0.3)
+        q.put('b{}'.format(i))
+        print('生产++++++b{} and {}'.format(i,os.getpid()))
+
+def consumer(q):
+    for i in range(10):
+        time.sleep(0.6)
+        print('买面包---------{} and {}'.format(q.get(),os.getpid()))
+
+if __name__ == '__main__':
+
+    p1 = multiprocessing.Process(target=produce,args=(q,))
+    p2 = multiprocessing.Process(target=consumer,args=(q,))
+
+    p1.start()
+    p2.start()
+```
+
+> `put(self, obj, block=True, timeout=None):` block:是否使用阻塞  Ture 当队列满可以等待 False 队列满时加入报错  timeout ：当队列满时等待多久报错  单位秒
+
+### 8.7join()方法
+
+等待线程或进程结束再继续运行
+
+```python
+import threading
+x = 10
+
+def he(a,b):
+    time.sleep(1)
+    global x
+    x = a+b
+
+t1 = threading.Thread(target=he,args=(1,1))
+t1.start()
+print(x)
+
+t1.join()
+
+print(x)
+```
+
+```sh
+10
+2
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
