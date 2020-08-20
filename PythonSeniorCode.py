@@ -866,3 +866,231 @@ from threading import Thread
 #
 #     p1.start()
 #     p2.start()
+import time
+
+import sympy   # 引入解方程的专业模块sympy
+# x = sympy.symbols("x")   # 申明未知数"x"
+# a = sympy.solve([x+(1/5)*x-240],[x])   # 写入需要解的方程体
+# print(a)  # 打印出结果
+
+# r = sympy.symbols('r')
+# result = sympy.solve([(100/(1+r))+(100/(1+r)**2)])
+
+
+import queue
+import multiprocessing
+
+# q1 = queue.Queue()           # 线程间通信
+# q2 = multiprocessing.Queue()  # 进程间通信
+
+# q = multiprocessing.Queue(5)
+# q.put('1')
+# q.put('2')
+# q.put('3')
+# q.put('4')
+# q.put('5')
+# q.get()
+# q.put('6')
+
+# import threading
+# x = 10
+#
+# def he(a,b):
+#     time.sleep(1)
+#     global x
+#     x = a+b
+#
+# t1 = threading.Thread(target=he,args=(1,1))
+# t1.start()
+# print(x)
+#
+# t1.join()
+#
+# print(x)
+
+
+# class test_await():
+#     def __init__(self,time_):
+#         time.sleep(time_)
+#     def __await__(self):
+#         yield
+#
+# async def washer_1():
+#     close_time = 2
+#     await asyncio.sleep(close_time)
+#     await test_await(close_time)
+#     print('washer_1 lose {} seconds'.format(close_time))
+#
+# async def washer_2():
+#     close_time = 3
+#     # await asyncio.sleep(close_time)
+#     await test_await(close_time)
+#     print('washer_2 lose {} seconds'.format(close_time))
+#
+# async def washer_3():
+#     close_time = 1
+#     # await asyncio.sleep(close_time)
+#     await test_await(close_time)
+#     print('washer_3 lose {} seconds'.format(close_time))
+#
+# if __name__ == '__main__':
+#
+#     start_time = time.time()
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(asyncio.wait([washer_1(),washer_2(),washer_3()]))
+#     loop.close()
+#     end_time = time.time()
+#     print(end_time-start_time)
+
+
+
+
+# import asyncio
+# import time
+# import random
+#
+# async def saynumber(number):
+#     wait_time = random.randint(1,4)/4
+#     time.sleep(wait_time)
+#     print(number,wait_time)
+#
+#
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(
+#     asyncio.wait([
+#         saynumber(number) for number in range(10)
+#     ])
+# )
+#
+#
+# loop.close()
+# print('hello world')
+#
+# import asyncio
+# import time
+# import random
+#
+# async def waiter(name):
+#     for _ in range(4):
+#         time_to_sleep = random.randint(1,8)/4
+#         time.sleep(time_to_sleep)
+#         print(
+#             "{} waited {} seconds".format(name,time_to_sleep)
+#         )
+#
+# async def main():
+#     await asyncio.wait([waiter("foo"),
+#                         waiter("bar")])
+#
+# if __name__ == '__main__':
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(main())
+#     loop.close()
+
+#
+# import asyncio
+# import time
+# import random
+#
+# async def waiter(name):
+#     for _ in range(4):
+#         time_to_sleep = random.randint(1,8)/4
+#         await asyncio.sleep(time_to_sleep)
+#         print(
+#             "{} waited {} seconds".format(name,time_to_sleep)
+#         )
+#
+# async def main():
+#     await asyncio.wait([waiter("foo"),
+#                         waiter("bar")])
+#
+# if __name__ == '__main__':
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(main())
+#     loop.close()
+#
+# def a():
+#     for i in range(10):
+#         yield i
+#
+# b =a()
+# print(b.__next__())
+# print(b.__next__())
+# print(b.__next__())
+# print(b.__next__())
+# print(b.__next__())
+# print(b.__next__())
+
+# import asyncio
+# import time
+#
+# async def wash_1():
+#     spend_time = 2
+#     await asyncio.sleep(spend_time)
+#     print('washer_1 spend {} seconds'.format(spend_time))
+#
+# async def wash_2():
+#     spend_time = 2
+#     await asyncio.sleep(spend_time)
+#     print('washer_2 spend {} seconds'.format(spend_time))
+#
+# async def wash_3():
+#     spend_time = 2
+#     await asyncio.sleep(spend_time)
+#     print('washer_3 spend {} seconds'.format(spend_time))
+#
+# if __name__ == '__main__':
+#     start_time = time.time()
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(asyncio.wait([wash_1(),wash_2(),wash_3()]))
+#     end_time = time.time()
+#     print('spend {} seconds'.format(end_time-start_time))
+
+import asyncio
+import time
+
+class Test():
+    def __init__(self):
+        self.content = []
+        for i in range(10):
+            if i%3==0:
+                self.content.append(i)
+                asyncio.sleep(9)
+
+
+
+    def __await__(self):
+        yield
+
+
+async def wash_1():
+
+    await Test()
+    print('washer_1')
+
+async def wash_2():
+    spend_time = 2
+    await Test()
+    print('washer_2')
+
+async def wash_3():
+    spend_time = 2
+    await Test()
+    print('washer_3')
+
+if __name__ == '__main__':
+    start_time = time.time()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.wait([wash_1(),wash_2(),wash_3()]))
+    end_time = time.time()
+    print('spend {} seconds'.format(end_time-start_time))
+
+
+# start_time = time.time()
+# list1 = []
+# for i in range(10000000):
+#     list1.append(i)
+# end_time = time.time()
+# print('spend {} seconds'.format(end_time-start_time))
+
+
