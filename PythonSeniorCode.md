@@ -1251,11 +1251,78 @@ print(x)
 2
 ```
 
+## 九、协程的三种方式（多任务时尽量选择协程：
+
+* 基于生成器generator（过渡）
+  * yield
+  * send()
+* Python3之后引入了asyncio模块
+  * @asyncio.coroutine协程装饰器，可以在函数上使用此装饰器，使得函数变成协程对象
+  * 在协程函数中，可以使用yield from阻塞当前的协程，将执行的权限移交给yield from之后的协程对象
+  * asyncio.get_event_loop()
+* python3.5后，引入关键字
+  * async 替代 @asyncio.coroutine
+  * await 替代 yield from
+
+```python
+import asyncio
+import time
+
+async def get(url,page=2):
+    if page==5:
+        return
+    print('---get_start----',page)
+    await asyncio.sleep(2)
+    print('----end_get------',page)
+    await parse('',page)
+    page+=1
+    await get(url,page)
+
+async def post(url,page_post=2):
+    if page_post>=5:
+        return
+    print('---post_start----', page_post)
+    await asyncio.sleep(2)
+    print('----end_post------', page_post)
+    await parse('', page_post)
+    page_post += 1
+    await get(url, page_post)
 
 
+async def parse(html,page):
+    print('---start_parse----',page)
+    await asyncio.sleep(1)
+    print('---end_parse---',page)
 
+if __name__ == '__main__':
+    start_time = time.time()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.wait([
+        get('http://'),post('https://')
+    ]))
+    end_time = time.time()
+    print(end_time-start_time)
+```
 
+> await阻塞当前协程，并调度到后面的协程对象  async 声明一个协程对象
 
+> 以命令行运行时，传参
+
+```python
+import sys
+
+print('hello world!!!')
+
+if __name__ == '__main__':
+    file_name = sys.argv[1]
+    print('file_name : {}'.format(file_name))
+```
+
+```sh
+D:\Desktop\python学习>python PythonSeniorCode.py 'nihao'
+hello world!!!
+file_name : 'nihao'
+```
 
 
 
