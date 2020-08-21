@@ -1101,43 +1101,43 @@ import multiprocessing
 #     file_name = sys.argv[1]
 #     print('file_name : {}'.format(file_name))
 
-import asyncio
-import time
-
-async def get(url,page=2):
-    if page==5:
-        return
-    print('---get_start----',page)
-    await asyncio.sleep(2)
-    print('----end_get------',page)
-    await parse('',page)
-    page+=1
-    await get(url,page)
-
-async def post(url,page_post=2):
-    if page_post>=5:
-        return
-    print('---post_start----', page_post)
-    await asyncio.sleep(2)
-    print('----end_post------', page_post)
-    await parse('', page_post)
-    page_post += 1
-    await get(url, page_post)
-
-
-async def parse(html,page):
-    print('---start_parse----',page)
-    await asyncio.sleep(1)
-    print('---end_parse---',page)
-
-if __name__ == '__main__':
-    start_time = time.time()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.wait([
-        get('http://'),post('https://')
-    ]))
-    end_time = time.time()
-    print(end_time-start_time)
+# import asyncio
+# import time
+#
+# async def get(url,page=2):
+#     if page==5:
+#         return
+#     print('---get_start----',page)
+#     await asyncio.sleep(2)
+#     print('----end_get------',page)
+#     await parse('',page)
+#     page+=1
+#     await get(url,page)
+#
+# async def post(url,page_post=2):
+#     if page_post>=5:
+#         return
+#     print('---post_start----', page_post)
+#     await asyncio.sleep(2)
+#     print('----end_post------', page_post)
+#     await parse('', page_post)
+#     page_post += 1
+#     await get(url, page_post)
+#
+#
+# async def parse(html,page):
+#     print('---start_parse----',page)
+#     await asyncio.sleep(1)
+#     print('---end_parse---',page)
+#
+# if __name__ == '__main__':
+#     start_time = time.time()
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(asyncio.wait([
+#         get('http://'),post('https://')
+#     ]))
+#     end_time = time.time()
+#     print(end_time-start_time)
 
 
 
