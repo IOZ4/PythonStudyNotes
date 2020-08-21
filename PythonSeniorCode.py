@@ -1046,44 +1046,44 @@ import multiprocessing
 #     end_time = time.time()
 #     print('spend {} seconds'.format(end_time-start_time))
 
-import asyncio
-import time
-
-class Test():
-    def __init__(self):
-        self.content = []
-        for i in range(10):
-            if i%3==0:
-                self.content.append(i)
-                asyncio.sleep(9)
-
-
-
-    def __await__(self):
-        yield
-
-
-async def wash_1():
-
-    await Test()
-    print('washer_1')
-
-async def wash_2():
-    spend_time = 2
-    await Test()
-    print('washer_2')
-
-async def wash_3():
-    spend_time = 2
-    await Test()
-    print('washer_3')
-
-if __name__ == '__main__':
-    start_time = time.time()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.wait([wash_1(),wash_2(),wash_3()]))
-    end_time = time.time()
-    print('spend {} seconds'.format(end_time-start_time))
+# import asyncio
+# import time
+#
+# class Test():
+#     def __init__(self):
+#         self.content = []
+#         for i in range(10):
+#             if i%3==0:
+#                 self.content.append(i)
+#                 asyncio.sleep(9)
+#
+#
+#
+#     def __await__(self):
+#         yield
+#
+#
+# async def wash_1():
+#
+#     await Test()
+#     print('washer_1')
+#
+# async def wash_2():
+#     spend_time = 2
+#     await Test()
+#     print('washer_2')
+#
+# async def wash_3():
+#     spend_time = 2
+#     await Test()
+#     print('washer_3')
+#
+# if __name__ == '__main__':
+#     start_time = time.time()
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(asyncio.wait([wash_1(),wash_2(),wash_3()]))
+#     end_time = time.time()
+#     print('spend {} seconds'.format(end_time-start_time))
 
 
 # start_time = time.time()
@@ -1092,5 +1092,52 @@ if __name__ == '__main__':
 #     list1.append(i)
 # end_time = time.time()
 # print('spend {} seconds'.format(end_time-start_time))
+
+# import sys
+#
+# print('hello world!!!')
+#
+# if __name__ == '__main__':
+#     file_name = sys.argv[1]
+#     print('file_name : {}'.format(file_name))
+
+import asyncio
+import time
+
+async def get(url,page=2):
+    if page==5:
+        return
+    print('---get_start----',page)
+    await asyncio.sleep(2)
+    print('----end_get------',page)
+    await parse('',page)
+    page+=1
+    await get(url,page)
+
+async def post(url,page_post=2):
+    if page_post>=5:
+        return
+    print('---post_start----', page_post)
+    await asyncio.sleep(2)
+    print('----end_post------', page_post)
+    await parse('', page_post)
+    page_post += 1
+    await get(url, page_post)
+
+
+async def parse(html,page):
+    print('---start_parse----',page)
+    await asyncio.sleep(1)
+    print('---end_parse---',page)
+
+if __name__ == '__main__':
+    start_time = time.time()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.wait([
+        get('http://'),post('https://')
+    ]))
+    end_time = time.time()
+    print(end_time-start_time)
+
 
 
