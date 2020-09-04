@@ -1139,5 +1139,9 @@ import multiprocessing
 #     end_time = time.time()
 #     print(end_time-start_time)
 
-
-
+# print(int('0x69',16))
+# print(bin(105))
+# print(int('0x10',16))
+# print(bin(16))
+# print(hex(336))
+# print(bin(int('0x63',16)))
